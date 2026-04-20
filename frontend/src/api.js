@@ -2,7 +2,9 @@
  * API service for communicating with the Spring Boot backend.
  */
 
-const API_BASE = 'http://localhost:8080/api';
+// In production (Vercel), VITE_API_BASE will point to the Render backend URL.
+// In development, it defaults to localhost.
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080/api';
 
 async function request(url, options) {
   const res = await fetch(`${API_BASE}${url}`, {

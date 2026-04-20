@@ -1,0 +1,34 @@
+# Render Blueprint - deploys backend + ML service
+services:
+  # Spring Boot Backend
+  - type: web
+    name: product-recommender-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: ML_SERVICE_URL
+        fromService:
+          type: web
+          name: product-recommender-ml
+          property: hostport
+      - key: FRONTEND_URL
+        value: https://product-recommender-vinayakmish.vercel.app
+      - key: SPRING_PROFILES_ACTIVE
+        value: dev
+    healthCheckPath: /api/products
+
+  # FastAPI ML Service
+  - type: web
+    name: product-recommender-ml
+    runtime: docker
+    dockerfilePath: ./ml-service/Dockerfile
+    dockerContext: ./ml-service
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8000
+    healthCheckPath: /health
